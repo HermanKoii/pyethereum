@@ -1,35 +1,35 @@
-# PyEthereum: A Low-Level Ethereum Prototype Implementation in Python
+# PyEthereum: Low-Level Ethereum Transaction and Encoding Library
 
 ## Project Overview
 
-A lightweight, low-level Ethereum implementation in Python that provides core blockchain and transaction processing functionality. This project represents an early prototype of an Ethereum node and smart contract execution environment, focusing on fundamental blockchain components and computational mechanics.
+Lightweight Ethereum Transaction and Encoding Library
 
-### Core Functionality
+This project is a low-level implementation of core Ethereum blockchain components, focusing on transaction handling, RLP (Recursive Length Prefix) encoding, and cryptographic transaction processing. The library provides fundamental tools for creating, parsing, and managing Ethereum transactions with a focus on raw data manipulation and encoding.
 
-The project implements several critical blockchain mechanisms:
+### Key Features
 
-- Transaction processing and validation
-- Block creation and management
-- Smart contract execution environment
-- Cryptocurrency transaction handling
-- Basic cryptographic operations
+- **Transaction Handling**: Comprehensive `Transaction` class that supports:
+  - Transaction creation with detailed parameters (nonce, recipient, value, fee, data)
+  - Transaction signing using cryptographic key operations
+  - Transaction serialization and hash generation
 
-### Key Technical Components
+- **RLP Encoding**: Custom RLP encoding and decoding implementation for:
+  - Converting between binary, integer, and list representations
+  - Supporting complex nested data structures
+  - Efficient encoding of blockchain-specific data types
 
-- Supports complex transaction types, including contract creation and execution
-- Implements a custom scripting language for smart contract interactions
-- Provides a transaction pool and block processing system
-- Includes cryptographic utilities for address generation and transaction signing
-- Defines a comprehensive set of computational opcodes for contract execution
+- **Cryptographic Primitives**:
+  - Transaction signing using ECDSA (Elliptic Curve Digital Signature Algorithm)
+  - Public key recovery
+  - Hash generation for transaction verification
 
-### Design Characteristics
+### Core Capabilities
 
-- Low-level implementation focusing on core blockchain principles
-- Designed with modularity, with separate modules for blocks, transactions, and contract processing
-- Supports fundamental cryptocurrency operations like balance tracking and transaction validation
-- Includes a flexible contract evaluation mechanism with support for various computational operations
+The library provides low-level primitives for blockchain transaction management, enabling developers to work with raw Ethereum transaction data, perform encoding/decoding operations, and implement core blockchain transaction logic with minimal dependencies.
 
-The codebase serves as an educational and experimental implementation of Ethereum's core concepts, demonstrating the underlying mechanisms of blockchain technology and decentralized computational systems.
+### Design Philosophy
+
+Emphasizes lightweight, performant implementation of essential blockchain transaction processing components, focusing on providing clean, direct implementations of core cryptographic and encoding mechanisms.
 
 ## Getting Started, Installation, and Setup
 
@@ -67,7 +67,7 @@ pip install rlp leveldb pybitcointools
 
 ### Quick Start
 
-Here's a basic example of using the project:
+Here's a basic example of initializing the project:
 
 ```python
 import rlp
@@ -82,21 +82,22 @@ private_key, address = genaddr("example_seed")
 # Note: Actual transaction creation requires specific parameters
 ```
 
-### Development Mode
+### Running the Project
 
+#### Development Mode
 To run the project in development mode:
 ```bash
 python manager.py
 ```
 
-### Platform Considerations
+### Platform Compatibility
 
-#### System Requirements
 - Compatible with Unix/Linux, macOS, and Windows
 - Requires Python 3.7+
 - System libraries for `leveldb` must be installed
 
-#### Potential Installation Challenges
+### Troubleshooting
+
 - Ensure all dependencies are correctly installed
 - Verify Python version compatibility
 - Check system-specific library requirements for `leveldb`
@@ -110,168 +111,179 @@ python manager.py
 
 ## Usage Examples
 
-These examples demonstrate how to work with the core classes in this Ethereum-related Python library.
+### Creating Transactions
+Create a new transaction by specifying the nonce, recipient address, value, fee, and optional data:
 
-#### Creating and Manipulating Transactions
-
-Create a new transaction with specific parameters:
 ```python
-# Create a transaction (nonce, to_address, value, fee, data)
-tx = Transaction(1, '0x1234...', 100, 1, '')
+from transactions import Transaction
 
+# Create a transaction
+tx = Transaction(
+    nonce=0,           # Transaction nonce
+    to='recipient_address',  # Recipient address 
+    value=10,          # Amount to send
+    fee=1,             # Transaction fee
+    data=None          # Optional additional data
+)
+```
+
+### Signing Transactions
+Sign a transaction using a private key:
+
+```python
 # Sign the transaction with a private key
+private_key = 'your_private_key'
 signed_tx = tx.sign(private_key)
 
-# Serialize the transaction to RLP format
-serialized_tx = tx.serialize()
-hex_serialized_tx = tx.hex_serialize()
+# Serialize the signed transaction
+serialized_tx = signed_tx.serialize()
+hex_tx = signed_tx.hex_serialize()
 ```
 
-#### Working with Blocks
+### Transaction Attributes
+Access various transaction properties:
 
-Create and manipulate blockchain blocks:
 ```python
-# Initialize a block from RLP-encoded data
-block = Block(encoded_block_data)
-
-# Get account balance
-balance = block.get_balance('0x1234...')
-
-# Set account balance
-block.set_balance('0x1234...', new_balance)
-
-# Pay transaction fees
-block.pay_fee(address, fee_amount)
-
-# Get contract state
-contract = block.get_contract('0x1234...')
-
-# Serialize block data
-block_data = block.serialize()
-block_hash = block.hash()
+# Get transaction details
+print(tx.sender)       # Sender's address
+print(tx.nonce)        # Transaction nonce
+print(tx.to)           # Recipient address
+print(tx.value)        # Transaction value
+print(tx.fee)          # Transaction fee
 ```
 
-#### Retrieving Block and Transaction Information
+### Transaction Parsing
+Parse an existing transaction from serialized data:
 
-Accessing block and transaction metadata:
 ```python
-# Block properties
-block_number = block.number
-block_timestamp = block.timestamp
-block_difficulty = block.difficulty
-
-# Transaction properties
-tx_nonce = tx.nonce
-tx_to_address = tx.to
-tx_value = tx.value
-tx_sender = tx.sender
+# Parse a transaction from hex or binary data
+parsed_tx = Transaction(serialized_transaction_data)
 ```
 
-#### Handling RLP Encoding/Decoding
+### Key Generation (Example from Manager)
+Generate addresses from a seed:
 
-The library uses RLP (Recursive Length Prefix) encoding for serialization:
 ```python
-# RLP encoding and decoding are handled by the rlp module
-# Used internally by Transaction and Block classes
+from manager import genaddr
+
+# Generate a private key and address from a seed
+private_key, address = genaddr("your_seed_string")
 ```
+
+### Notes
+- This is a low-level implementation of Ethereum-like transaction handling
+- Always ensure proper key management and security practices
+- Transaction validation occurs during blockchain processing
 
 ## Additional Notes
 
 ### Historical Context
 
-This project represents an early implementation of Ethereum-related cryptographic and transaction processing utilities, serving as a historical snapshot of the Ethereum protocol's development.
+This project represents an early prototype implementation of Ethereum-related blockchain technologies, capturing the fundamental mechanisms of transaction processing and blockchain data handling in Python.
 
-### RLP Encoding Specifics
+### Technical Foundations
 
+#### RLP Encoding
 The implementation features a custom Recursive Length Prefix (RLP) encoding mechanism critical to Ethereum's data serialization:
-- Supports encoding of integers, strings, and nested lists
+- Supports encoding of complex data structures including nested lists
 - Provides efficient binary conversion and length handling
-- Offers flexible encoding for diverse data types
+- Enables compact representation of blockchain-related data
 
-### Transaction Processing
+#### Cryptographic Primitives
+The codebase demonstrates low-level cryptographic operations fundamental to blockchain technology:
+- Address generation techniques
+- Transaction signing mechanisms
+- Basic cryptographic utilities for blockchain data processing
 
-The transaction implementation demonstrates core blockchain functionality:
-- Cryptographic transaction signing using ECDSA
-- Comprehensive transaction creation and parsing
-- Serialization and deserialization of transaction data
-- Mechanism for deriving sender addresses
-
-### Compatibility and Limitations
+### Project Limitations
 
 **Important Considerations**:
-- This is a prototype implementation
-- Not intended for production use
-- Represents an early-stage development of Ethereum-related technologies
-- Current maintained version is available in the [official pyethereum repository](https://github.com/ethereum/pyethereum)
-
-### Cryptographic and Technical Foundations
-
-- Utilizes basic cryptographic primitives
-- Implements low-level blockchain data handling techniques
-- Provides foundational components for understanding blockchain data processing
+- This is an experimental, low-level prototype
+- Not suitable for production blockchain applications
+- Serves primarily as an educational and research-oriented implementation
+- Represents an early-stage exploration of Ethereum protocol concepts
 
 ### Research and Educational Value
 
-While not suitable for production, this implementation offers:
+While not intended for direct production use, this implementation offers:
 - Insights into early blockchain technology design
-- Example of Ethereum protocol primitives
-- Reference for understanding transaction and encoding mechanisms
+- Reference implementation of Ethereum protocol primitives
+- Detailed example of transaction and block processing mechanisms
+- Demonstration of core blockchain data handling techniques
 
-### Dependency Notes
+### Dependency Characteristics
 
-- Relies on `pybitcointools` for cryptographic operations
-- Features a custom RLP implementation for data encoding
+- Relies on external cryptographic libraries for core operations
+- Implements custom encoding and processing mechanisms
+- Demonstrates modular approach to blockchain component design
+
+### Technical Exploration Areas
+
+Developers and researchers may find this project valuable for:
+- Understanding blockchain data serialization
+- Exploring low-level transaction processing
+- Studying early Ethereum protocol design principles
+- Investigating blockchain cryptographic foundations
 
 ## Contributing
 
-We welcome contributions to this project! By contributing, you help improve and expand the functionality of this Ethereum-related Python library.
+We welcome contributions to this project! To ensure a smooth collaboration, please follow these guidelines:
 
-### How to Contribute
+### Contribution Process
 
 1. Fork the repository
 2. Create a new branch for your feature or bugfix
-3. Make your changes
-4. Write or update tests to cover your modifications
-5. Ensure all tests pass
-6. Submit a pull request
+3. Make your changes, ensuring they align with the project's existing code style
+4. Write or update tests to cover your changes
+5. Ensure all tests pass before submitting a pull request
 
-### Contribution Guidelines
+### Code Style
 
-#### Code Style
-- Follow Python coding standards (PEP 8)
-- Write clear, concise, and well-documented code
-- Use meaningful variable and function names
+- Follow Python conventions and best practices
+- Use clear, descriptive variable and function names
+- Add docstrings and comments to explain complex logic
+- Maintain consistent indentation and formatting
 
-#### Testing
-- All new features and bugfixes must include appropriate test cases
-- Run existing test suite before submitting a pull request
-- Maintain or improve overall test coverage
+### Testing
 
-#### Reporting Issues
-- Use GitHub Issues to report bugs or suggest enhancements
-- Provide a clear description of the issue
-- Include steps to reproduce the problem, if applicable
+- All new features or bugfixes must include appropriate test cases
+- Run existing tests before submitting a pull request
+- Use the `trietest.py` as a reference for writing comprehensive tests
 
-#### Pull Request Process
+### Reporting Issues
+
+- Use GitHub Issues to report bugs or suggest improvements
+- Provide a clear and detailed description of the issue
+- Include steps to reproduce the problem if applicable
+
+### Pull Request Guidelines
+
 - Provide a clear description of your changes
 - Reference any related issues
 - Ensure your code passes all existing tests
-- Be responsive to code review feedback
+- Be prepared to make modifications based on reviewer feedback
 
 ### Code of Conduct
-Be respectful, inclusive, and considerate of others. Harassment and discrimination are not tolerated.
+
+Treat all contributors with respect. Harassment, discrimination, or offensive behavior will not be tolerated.
 
 ## License
 
 This project is currently unlicensed. 
 
-#### Licensing Status
+### Licensing Status
 As no specific license file is present in the repository, the code is considered unlicensed. This means:
 
 - The code is not legally protected for reuse
 - No explicit permissions are granted for modification or distribution
 - Copyright may implicitly belong to the original authors
-- Users should contact the original authors for any usage permissions
+- Users should seek explicit permission before using, modifying, or distributing the code
 
-#### Recommended Action
-For clarity and legal protection, it is strongly advised to add an appropriate open-source license to the project, such as MIT, Apache, or GPL, to define clear terms of use and contribution.
+### Usage Restrictions
+Without a formal license, potential users should be aware that:
+- There are no clear terms defining how the code can be used
+- Reproducing or distributing the code may pose legal risks
+- The original authors retain implicit copyright
+
+### Recommended Action
+For clarity and legal protection, it is strongly recommended to add an appropriate open-source license to define clear terms of use and contribution.
